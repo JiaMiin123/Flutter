@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:ndialog/ndialog.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Text("Enter Movie Name below",
+                    const Text("Enter Movie Name below :",
                         style: TextStyle(fontSize: 20)),
                     TextField(
                       controller: textEditingController,
@@ -95,26 +96,35 @@ class _MyHomePageState extends State<MyHomePage> {
     var jsonData = response.body;
     var parsedJson = json.decode(jsonData);
     poster = parsedJson['Poster'];
+    ProgressDialog dialog = ProgressDialog(context,
+        message: const Text("Progressing..."),
+        title: const Text("Searching..."));
+    dialog.show();
     if (rescode == 200) {
+      Fluttertoast.showToast(
+          msg: "Movie is Found!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          fontSize: 14.0);
       setState(() {
         var title = parsedJson['Title'];
         var year = parsedJson['Year'];
         var genre = parsedJson['Genre'];
         var actor = parsedJson['Actors'];
         var language = parsedJson['Language'];
-        desc =
-            // ignore: prefer_interpolation_to_compose_strings, prefer_adjacent_string_concatenation
-            "The Movie Title: " +
-                "$title\n" +
-                "Year Released:" +
-                "$year\n" +
-                "Genre: " +
-                "$genre\n" +
-                "Actor: " +
-                "$actor\n" +
-                "Language: " +
-                "$language\n";
+        desc = "The Movie Title: " +
+            "$title\n" +
+            "Year Released:" +
+            "$year\n" +
+            "Genre: " +
+            "$genre\n" +
+            "Actor: " +
+            "$actor\n" +
+            "Language: " +
+            "$language\n";
       });
+      dialog.dismiss();
     } else {
       setState(() {
         desc = "No record";
